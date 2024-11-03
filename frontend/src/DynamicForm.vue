@@ -1,12 +1,5 @@
 <template>
-  <div>
-    <h1>Compteur {{ counter }}</h1>
-    <div v-show="counter > 5">Vous avez cliqué plus de 5 fois</div>
-    <button @click="increment">Increment</button>
-    <button @click="decrement">Decrement</button>
-
-
-
+    <div>
     <div v-for="participant in participants" :key="participant.id" style="margin:5px; padding:5px; display:flex; justify-content: center;">
 
       <div>
@@ -19,7 +12,7 @@
         </select>
       </div>
 
-      <div v-if="participant.type == types[0]" @change="selectTypeAB(participant.id)">
+      <div v-if="participant.type == types[0]" @change="selectTypeA(participant.id)">
         <select v-model="participant.typeA">
           <option v-for="typeA in typesA" :key="typeA">{{ typeA }}</option>
         </select>
@@ -37,7 +30,7 @@
         </select>
       </div>
 
-      <div v-if="participant.type == types[1]" @change="selectTypeAB(participant.id)">
+      <div v-if="participant.type == types[1]" @change="selectTypeB(participant.id)">
         <select v-model="participant.typeB">
           <option v-for="typeB in typesB" :key="typeB">{{ typeB }}</option>
         </select>
@@ -68,97 +61,102 @@
     </div>
     
     <button @click="add">Add</button>
-
-  </div>
+    </div>
 </template>
 
-<script setup>
-import {ref} from 'vue'
-
-const types = [ "A", "B" ]
-const typesA = [ "A1", "A2" ]
-const typesA1 = [ "A1a", "A1b", "A1c" ]
-const typesA2 = [ "A2a", "A2b", "A2c" ]
-const typesB = [ "B1", "B2" ]
-const typesB1 = [ "B1a", "B1b", "B1c" ]
-const typesB2 = [ "B2a", "B2b", "B2c" ]
-
-// const participants = ref({
-//   id : 0,
-//   A : {
-
-//   }
-// })
-
-const participants = ref([
-  { 
-    id : 0, 
-    type : types[0], 
-    typeA : typesA[0],
-    typeA1 : typesA1[0],
-    typeA2 : null,
-    typeB : null,
-    typeB1 : null,
-    typeB2 : null,
-  },
-  { 
-    id : 1, 
-    type : types[1], 
-    typeA : null,
-    typeA1 : null,
-    typeA2 : null,
-    typeB : typesB[1],
-    typeB1 : null,
-    typeB2 : typesB2[0],
-  },
-])
+<script>
+import { ref } from 'vue'
 
 
-const counter = ref(0)
-counter.value = 3
-const increment = () => {
-  counter.value++;
-}
+export default {
+  setup() {
+    const types = [ "A", "B" ]
+    const typesA = [ "A1", "A2" ]
+    const typesA1 = [ "A1a", "A1b", "A1c" ]
+    const typesA2 = [ "A2a", "A2b", "A2c" ]
+    const typesB = [ "B1", "B2" ]
+    const typesB1 = [ "B1a", "B1b", "B1c" ]
+    const typesB2 = [ "B2a", "B2b", "B2c" ]
 
-const decrement = () => {
-  counter.value--;
-}
+    const participants = ref([
+    { 
+        id : 0, 
+        type : types[0], 
+        typeA : typesA[0],
+        typeA1 : typesA1[0],
+        typeA2 : null,
+        typeB : null,
+        typeB1 : null,
+        typeB2 : null,
+    },
+    { 
+        id : 1, 
+        type : types[1], 
+        typeA : null,
+        typeA1 : null,
+        typeA2 : null,
+        typeB : typesB[1],
+        typeB1 : null,
+        typeB2 : typesB2[0],
+    },
+    ])
 
-const selectType = (id) => {
-  let participant = participants.value.filter(p => p.id === id)[0]
-  participant.typeA = null
-  participant.typeA1 = null
-  participant.typeA2 = null
-  participant.typeB = null
-  participant.typeB1 = null
-  participant.typeB2 = null
-}
+    function selectType(id) {
+    if (participants.value[id].type == types[0]) participants.value[id] = { 
+        ...participants.value[id], 
+        typeB : null, 
+        typeB1 : null, 
+        typeB2 : null, 
+        typeB3 : null 
+    }
+    else if (participants.value[id].type == types[1]) participants.value[id] = { 
+        ...participants.value[id], 
+        typeA : null, 
+        typeA1 : null, 
+        typeA2 : null, 
+        typeA3 : null 
+    }
+    console.log(participants.value[id])
+    }
 
-const selectTypeAB = (id) => {
-  const participant = participants.value.filter(p => p.id === id)[0]
-  participant.typeA1 = null
-  participant.typeA2 = null
-  participant.typeB1 = null
-  participant.typeB2 = null
-}
+    function selectTypeA(id) {
+    participants.value[id] = { 
+        ...participants.value[id], 
+        typeA1 : null,
+        typeA2 : null,
+    }
+    console.log(participants.value)
+    }
 
-const add = () => {
-  const index = participants.value.length === 0 ? 0 : Math.max(...participants.value.map(p => p.id)) + 1;
-  participants.value.push({ 
-    id : index, 
-    type : types[1], 
-    typeA : null,
-    typeA1 : null,
-    typeA2 : null,
-    typeB : null,
-    typeB1 : null,
-    typeB2 : null,
-  })
-}
+    function selectTypeB(id) {
+    participants.value[id] = { 
+        ...participants.value[id], 
+        typeB1 : null,
+        typeB2 : null,
+    }
+    console.log(participants.value)
+    }
 
-const remove = (id) => {
-  participants.value = participants.value.filter(p => p.id !== id);
-}
+    function add(){
+    const index = participants.value.length === 0 ? 0 : Math.max(...participants.value.map(p => p.id)) + 1;
+    participants.value.push({ 
+        id : index, 
+        type : types[1], 
+        typeA : null,
+        typeA1 : null,
+        typeA2 : null,
+        typeB : null,
+        typeB1 : null,
+        typeB2 : null,
+    })
+    }
+
+    function remove(id){
+    participants.value = participants.value.filter(p => p.id !== id);
+    }
+  }
+};
+
 
 </script>
 
